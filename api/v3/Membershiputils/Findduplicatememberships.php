@@ -28,7 +28,7 @@ function civicrm_api3_membershiputils_Findduplicatememberships() {
   $graceStatusId     = array_search('Grace', CRM_Member_PseudoConstant::membershipStatus());
 
   try {
-    CRM_Core_DAO::executeQuery("UPDATE civicrm_membership as `duplicate` INNER JOIN civicrm_membership as `current` ON `duplicate`.`id` <> `current`.`id` AND `duplicate`.`membership_type_id`=`current`.`membership_type_id` AND `duplicate`.`contact_id`=`current`.`contact_id` SET `duplicate`.`status_id`=%1, `duplicate`.`is_override`=1 WHERE `duplicate`.`end_date` < `current`.`end_date` AND `duplicate`.`status_id` IN (%2,%3,%4)", [
+    CRM_Core_DAO::executeQuery("UPDATE civicrm_membership as `duplicate` INNER JOIN civicrm_membership as `current` ON `duplicate`.`id` <> `current`.`id` AND `duplicate`.`membership_type_id`=`current`.`membership_type_id` AND `duplicate`.`contact_id`=`current`.`contact_id` SET `duplicate`.`status_id`=%1, `duplicate`.`is_override`=1 WHERE `duplicate`.`end_date` < `current`.`end_date` AND `duplicate`.`status_id` IN (%2,%3,%4) AND `duplicate`.`owner_membership_id` IS NULL", [
       1 => [$duplicateStatusId, 'Integer'],
       2 => [$currentStatusId, 'Integer'],
       3 => [$expiredStatusId, 'Integer'],
