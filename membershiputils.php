@@ -1,8 +1,10 @@
 <?php
 
 require_once 'membershiputils.civix.php';
+
 // phpcs:disable
 use CRM_Membershiputils_ExtensionUtil as E;
+
 // phpcs:enable
 
 /**
@@ -133,7 +135,24 @@ function membershiputils_civicrm_managed(&$entities) {
       'description' => 'Find duplicate memberships and set their Membership Status to Duplicate.',
       'api_entity' => 'membershiputils',
       'api_action' => 'Findduplicatememberships',
+      'parameters' => '',
       'run_frequency' => 'Always',
+      'is_active' => 0,
+    ],
+  ];
+  $entities[] = [
+    'module' => 'au.com.agileware.membershiputils',
+    'name' => 'adjustmembershipenddate',
+    'entity' => 'Job',
+    'params' => [
+      'version' => 3,
+      'name' => 'Adjust Membership End Date',
+      'description' => 'Bulk update the membership end date for all membership, setting the end date to the end of month.',
+      'api_entity' => 'membershiputils',
+      'api_action' => 'Adjustmembershipenddate',
+      'parameters' => '',
+      'run_frequency' => 'Daily',
+      'is_active' => 0,
     ],
   ];
 }
@@ -192,30 +211,67 @@ function membershiputils_civicrm_themes(&$themes) {
   _membershiputils_civix_civicrm_themes($themes);
 }
 
-// --- Functions below this ship commented out. Uncomment as required. ---
-
-/**
- * Implements hook_civicrm_preProcess().
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_preProcess
+/*
+ * Adjust the end date to end of the month
  */
-//function membershiputils_civicrm_preProcess($formName, &$form) {
-//
-//}
+
+function membershiputils_adjustmembershipenddate($end_date) {
+  // Bizarrely, CiviCRM may pass in end_date in either of these two formats
+  if (strpos($end_date, '-') == FALSE) {
+    $date_format = 'Ymd';
+  }
+  else {
+    $date_format = 'Y-m-d';
+  }
+
+  $end_date = date_create_from_format($date_format, $end_date);
+  $start_month = date_create($end_date->format('Y-m') . '-01');
+  $new_end_date = date_modify($start_month, '+1 month -1 day');
+
+  // Return the date in the same format it was received
+  return $new_end_date->format($date_format);
+}
+
+function membershiputils_civicrm_pre($op, $objectName, $id, &$params) {
+  // If the Membership is being created or edited and the end date has been set then adjust
+  if (('Membership' == $objectName) && ('edit' == $op || 'create' == $op) && $params['end_date']) {
+    if (Civi::settings()->get('adjust_membership_end_date')) {
+      // This is where CiviCRM may pass in the end date in two different formats
+      $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
+    }
+  }
+}
+
+function membershiputils_civicrm_post($op, $objectName, $id, &$params) {
+  // This function is required to work around weirdness in CiviCRM which sometimes does not set the membership dates, they may be NULL
+  if ('Membership' == $objectName && 'create' == $op) {
+
+    if (Civi::settings()->get('adjust_membership_end_date')) {
+      // If end date has been set then do not try to calculate it now
+      if (!$params->end_date) {
+        $dates = CRM_Member_BAO_MembershipType::getDatesForMembershipType($params->membership_type_id, NULL, NULL, NULL);
+
+        CRM_Core_DAO::setFieldValue('CRM_Member_DAO_Membership', $id, 'join_date', $dates['join_date'], 'id');
+        CRM_Core_DAO::setFieldValue('CRM_Member_DAO_Membership', $id, 'start_date', $dates['start_date'], 'id');
+        CRM_Core_DAO::setFieldValue('CRM_Member_DAO_Membership', $id, 'end_date', $dates['end_date'], 'id');
+      }
+    }
+  }
+}
 
 /**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
  */
-//function membershiputils_civicrm_navigationMenu(&$menu) {
-//  _membershiputils_civix_insert_navigation_menu($menu, 'Mailings', array(
-//    'label' => E::ts('New subliminal message'),
-//    'name' => 'mailing_subliminal_message',
-//    'url' => 'civicrm/mailing/subliminal',
-//    'permission' => 'access CiviMail',
-//    'operator' => 'OR',
-//    'separator' => 0,
-//  ));
-//  _membershiputils_civix_navigationMenu($menu);
-//}
+function membershiputils_civicrm_navigationMenu(&$menu) {
+  _membershiputils_civix_insert_navigation_menu($menu, 'Administer', [
+    'label' => E::ts('Membership Utils Settings'),
+    'name' => 'membershiputils_settings',
+    'url' => 'civicrm/admin/setting/membershiputils',
+    'permission' => 'administer CiviCRM',
+    'operator' => 'OR',
+    'separator' => 0,
+  ]);
+  _membershiputils_civix_navigationMenu($menu);
+}

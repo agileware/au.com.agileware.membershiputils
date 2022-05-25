@@ -1,4 +1,5 @@
 <?php
+
 use CRM_Membershiputils_ExtensionUtil as E;
 
 /**
@@ -38,6 +39,6 @@ function civicrm_api3_membershiputils_Findduplicatememberships() {
     return civicrm_api3_create_success(TRUE, $params, 'membershiputils', 'Findduplicatememberships');
   }
   catch (Exception $e) {
-    throw new CRM_Core_Exception('Error marking memberships as duplicate. Error: ' . $e->getMessage() );
+    throw new CRM_Core_Exception('Error marking memberships as duplicate. Error: ' . $e->getMessage());
   }
 }
