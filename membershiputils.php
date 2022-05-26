@@ -144,6 +144,7 @@ function membershiputils_civicrm_managed(&$entities) {
     'module' => 'au.com.agileware.membershiputils',
     'name' => 'adjustmembershipenddate',
     'entity' => 'Job',
+    'update' => 'never',
     'params' => [
       'version' => 3,
       'name' => 'Adjust Membership End Date',
