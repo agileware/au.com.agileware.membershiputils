@@ -11,7 +11,7 @@ use CRM_Membershiputils_ExtensionUtil as E;
  *
  * @see https://docs.civicrm.org/dev/en/latest/framework/api-architecture/
  */
-function _civicrm_api3_job_Adjustmembershipenddate_spec(&$spec) {
+function _civicrm_api3_membershiputils_Adjustmembershipenddate_spec(&$spec) {
 }
 
 /**
@@ -29,7 +29,7 @@ function _civicrm_api3_job_Adjustmembershipenddate_spec(&$spec) {
  * @see civicrm_api3_create_success
  *
  */
-function civicrm_api3_job_Adjustmembershipenddate($params) {
+function civicrm_api3_membershiputils_Adjustmembershipenddate($params) {
   try {
     // Get all memberships
     $memberships = Membership::get()
