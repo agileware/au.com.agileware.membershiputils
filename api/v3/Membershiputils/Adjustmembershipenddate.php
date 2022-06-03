@@ -34,6 +34,7 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params) {
     // Get all memberships
     $memberships = Membership::get()
       ->addSelect('id', 'end_date')
+      ->addWhere('status_id:name', 'IN', ['New', 'Current', 'Grace'])
       ->execute()->getArrayCopy();
     foreach ($memberships as $membership) {
       // Calculate the end of month date for the membership

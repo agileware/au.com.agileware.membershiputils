@@ -27,7 +27,7 @@ This feature is useful if you want to have all membership end dates occur on the
 
 This feature can be enabled or disabled on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
 
-If you have existing memberships that need to be updated, then execute the Scheduled Job, `Adjust Membership End Date`. This will also update the membership end date for all memberships, setting the end date to the end of month.
+If you have existing memberships that need to be updated, then execute the Scheduled Job, `Adjust Membership End Date`. This will also update the membership end date for **New**, **Current** and **Grace** memberships, setting the end date to the end of month.
 
 # Installation
 
