@@ -220,6 +220,8 @@ function membershiputils_adjustmembershipenddate($end_date) {
   // Bizarrely, CiviCRM may pass in end_date in either of these two formats
   if (strpos($end_date, '-') == FALSE) {
     $date_format = 'Ymd';
+    // Return only the date part of a MySQL datetime value
+    $end_date = substr($end_date, 0, 8);
   }
   else {
     $date_format = 'Y-m-d';
