@@ -237,7 +237,8 @@ function membershiputils_adjustmembershipenddate($end_date) {
 
 function membershiputils_civicrm_pre($op, $objectName, $id, &$params) {
   // If the Membership is being created or edited and the end date has been set then adjust
-  if (('Membership' == $objectName) && ('edit' == $op || 'create' == $op) && $params['end_date']) {
+  // Skip when 'null' is set as the end_date as this indicates a Lifetime membership term with on end date
+  if (('Membership' == $objectName) && ('edit' == $op || 'create' == $op) && $params['end_date'] && 'null' !== $params['end_date']) {
     if (Civi::settings()->get('adjust_membership_end_date')) {
       // This is where CiviCRM may pass in the end date in two different formats
       $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
