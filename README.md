@@ -3,15 +3,17 @@
 [Membership Utils](https://github.com/agileware/au.com.agileware.membershiputils) is a CiviCRM extension providing some useful functions to help manage memberships in [CiviCRM](https://civicrm.org), including:
 1. Membership Statuses: 'Duplicate' and 'Not Renewing'
 2. Scheduled Job, `Find Duplicate Memberships` which finds duplicate Memberships and sets the status to 'Duplicate'.
-3. Feature to automatically adjust the membership end date to the end of the month. For example: a membership with an end date of 16/04/2022 will be changed to 30/04/2022. This feature is useful if you want to have all membership end dates occur on the last day of the month, rather than the default which is mid-month.
-4. Scheduled Job, `Adjust Membership End Date` which updates the membership end date for all membership, setting the end date to the end of month.
+3. Feature to automatically adjust the **membership end date** to the **end of the month** when creating or updating a membership. For example: a membership with an end date of 16/04/2022 will be changed to 30/04/2022. This feature is useful if you want to have all membership end dates occur on the last day of the month, rather than the default which is mid-month.
+4. Feature to automatically **set the membership end date** to a **specific date** when creating or updating a membership. 
+5. Scheduled Job, `Adjust Membership End Date` which sets the membership end date to the end of month.
+6. Scheduled Job, `Set specific Membership End Date` which sets the membership end date to a specific date.
  
 ## Duplicate Memberships
 
 Duplicate memberships in CiviCRM is a major issue for Membership Managers and the `Find Duplicate Memberships` job alleviates this issue by automatically changing the membership status of duplicate memberships to *Duplicate*. A membership is deemed to be a duplicate if:
 1. The membership is of the same membership type
 2. The membership is older than the current membership
-3. The membership is has a status of Current, Expired or Grace
+3. The membership has a status of Current, Expired or Grace
 
 By changing the membership status to *Duplicate*, this then prevents duplicate Membership Renewal Reminders from being sent to the Contacts, avoiding potential confusion and/or negative feedback to your organisation.
 
@@ -27,7 +29,15 @@ This feature is useful if you want to have all membership end dates occur on the
 
 This feature can be enabled or disabled on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
 
-If you have existing memberships that need to be updated, then execute the Scheduled Job, `Adjust Membership End Date`. This will also update the membership end date for **New**, **Current** and **Grace** memberships, setting the end date to the end of month.
+If you have existing memberships that need to be updated, then execute the Scheduled Job, `Adjust Membership End Date` (API:  membershiputils.adjustmembershipenddate). This will update the memberships with a status of either: **New**, **Current** and **Grace**, setting the end date to the end of month.
+
+## Specific Membership End Date
+
+This feature is useful if you want to have all membership end dates occur on a specific date. For example, if your organisation provides membership which have a 3 year term and all memberships must be aligned with that term.
+
+This feature can be enabled or disabled on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
+
+If you have existing memberships that need to be updated, then execute the Scheduled Job, `Set specific Membership End Date` (API:  membershiputils.Specificmembershipenddate). This will update the memberships with a status of either: **New**, **Current** and **Grace**, setting the end date to the date specified in the settings.
 
 # Installation
 
