@@ -3,7 +3,7 @@
 use Civi\Api4\Membership;
 
 /**
- * Job.Adjustmembershipenddate API
+ * Job.Specificmembershipenddate API
  *
  * Scheduled job which will bulk adjust the membership end date for all
  * membership, setting the end date to the end of month
@@ -17,10 +17,10 @@ use Civi\Api4\Membership;
  * @see civicrm_api3_create_success
  *
  */
-function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
+function civicrm_api3_membershiputils_Specificmembershipenddate($params): array {
   try {
 		// If this option is enabled then action, otherwise skip
-	  if ( Civi::settings()->get( 'adjust_membership_end_date' ) ) {
+	  if ( Civi::settings()->get( 'use_specific_membership_end_date' ) ) {
 		  // Get all memberships
 		  $memberships = Membership::get()
 		                           ->addSelect( 'id', 'end_date' )
@@ -31,10 +31,8 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
 		                           ] )
 		                           ->execute()->getArrayCopy();
 		  foreach ( $memberships as $membership ) {
-			  // Calculate the end of month date for the membership
-			  $end_date     = date_create( $membership['end_date'] );
-			  $start_month  = date_create( $end_date->format( 'Y-m' ) . '-01' );
-			  $new_end_date = date_modify( $start_month, '+1 month -1 day' );
+			  // Set a specific end date
+			  $new_end_date = date_create_from_format('Y-m-d', Civi::settings()->get('specific_membership_end_date'));
 
 			  // Update the membership
 			  Membership::update()
@@ -43,10 +41,10 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
 			            ->execute();
 		  }
 
-		  return civicrm_api3_create_success( TRUE, $params, 'membershiputils', 'Adjustmembershipenddate' );
+		  return civicrm_api3_create_success( TRUE, $params, 'membershiputils', 'Specificmembershipenddate' );
 	  }
   }
   catch (Exception $e) {
-    throw new CRM_Core_Exception('Error updating adjusting membership end date. Error: ' . $e->getMessage());
+    throw new CRM_Core_Exception('Error setting specific membership end date. Error: ' . $e->getMessage());
   }
 }

@@ -1,7 +1,5 @@
 <?php
 
-use CRM_Membershiputils_ExtensionUtil as E;
-
 /**
  * Membershiputils.Findduplicatememberships API
  *
@@ -13,7 +11,7 @@ use CRM_Membershiputils_ExtensionUtil as E;
  *
  * @see civicrm_api3_create_success
  */
-function civicrm_api3_membershiputils_Findduplicatememberships() {
+function civicrm_api3_membershiputils_Findduplicatememberships(): array {
   /* Example query to locate duplicate memberships
    SELECT `duplicate`.*, `current`.`id` `current_id`, `current`.`status_id` `current_status_id`, `current`.`join_date` `current_join_date`, `current`.`start_date` `current_start_date`, `current`.`end_date` `current_end_date`
         FROM civicrm_membership `duplicate` INNER JOIN civicrm_membership `current`
