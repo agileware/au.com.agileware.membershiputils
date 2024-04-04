@@ -4,6 +4,7 @@ require_once 'membershiputils.civix.php';
 
 // phpcs:disable
 use CRM_Membershiputils_ExtensionUtil as E;
+use Symfony\Component\DependencyInjection\{ContainerBuilder,Definition};
 
 // phpcs:enable
 
@@ -14,6 +15,17 @@ use CRM_Membershiputils_ExtensionUtil as E;
  */
 function membershiputils_civicrm_config(&$config) {
   _membershiputils_civix_civicrm_config($config);
+}
+
+/**
+ * Implements hook_civicrm_container().
+ *
+ * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_container/
+ */
+function membershiputils_civicrm_container( ContainerBuilder $container) {
+  $resource_hooks = new Definition('CRM_Membershiputils_ResourceHooks');
+  $resource_hooks->addTag('kernel.event_subscriber');
+  $container->setDefinition('membershiputils_resource_hooks', $resource_hooks);
 }
 
 /**
