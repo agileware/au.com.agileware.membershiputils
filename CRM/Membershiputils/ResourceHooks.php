@@ -19,15 +19,24 @@ class CRM_Membershiputils_ResourceHooks implements EventSubscriberInterface {
     ];
   }
 
+  private function addTypeChangeResources() {
+    Civi::resources()->addVars('membershipUtils', [
+      'typeChangeMessage' => Civi::settings()->get('membershiputils_type_change_message'),
+      'typeChangeNotification' => Civi::settings()->get('membershiputils_type_change_notification'),
+    ]);
+
+    Civi::resources()->addScriptFile( E::LONG_NAME, 'js/typechange.js' );
+  }
+
   public function pageRun( GenericHookEvent $event ) {
     if ( $event->page instanceof CRM_Contribute_Page_ContributionPage ) {
-      CRM_Core_Resources::singleton()->addScriptFile( E::LONG_NAME, 'js/typechange.js' );
+      $this->addTypeChangeResources();
     }
   }
 
   public function buildForm( GenericHookEvent $event ) {
     if ( $event->form instanceof CRM_Contribute_Form_Contribution_Main ) {
-      CRM_Core_Resources::singleton()->addScriptFile( E::LONG_NAME, 'js/typechange.js' );
+      $this->addTypeChangeResources();
     }
   }
 }

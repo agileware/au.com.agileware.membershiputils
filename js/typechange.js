@@ -3,6 +3,8 @@
 
 	const membershipFeeSection = document.querySelector( '.crm-section.membership_fee-section' );
 
+	const { typeChangeMessage, typeChangeNotification } = CRM.vars.membershipUtils;
+
 	/** @var {HTMLElement[]} **/
 	let messageEl = [];
 
@@ -32,7 +34,7 @@
 	 * @param to {string}
 	 */
 	const showMessage = async function ( element, name, from, to ) {
-		const message = ts( 'Are you sure you want to change your Membership Type from ‘%1’ to ‘%2’?', {1: from, 2: to} )
+		const message = ts( typeChangeMessage, {1: from, 2: to} );
 
 		hideMessage(name);
 
@@ -92,5 +94,7 @@
 		showMessage( target.closest('.price-set-row') ?? this, name, defaultOption['membership_type_id.name'], thisOption['membership_type_id.name'] );
 	};
 
-	membershipFeeSection.addEventListener( 'change', feeSelectionChange );
+	if(typeChangeNotification) {
+		membershipFeeSection.addEventListener( 'change', feeSelectionChange );
+	}
 })(CRM.ts('au.com.agileware.membershiputils'))
