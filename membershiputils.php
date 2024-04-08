@@ -26,6 +26,10 @@ function membershiputils_civicrm_container( ContainerBuilder $container) {
   $resource_hooks = new Definition('CRM_Membershiputils_ResourceHooks');
   $resource_hooks->addTag('kernel.event_subscriber');
   $container->setDefinition('membershiputils_resource_hooks', $resource_hooks);
+
+  $process_hooks = new Definition('CRM_Membershiputils_ProcessHooks');
+  $process_hooks->addTag('kernel.event_subscriber');
+  $container->setDefinition('membershiputils_process_hooks', $process_hooks);
 }
 
 /**
