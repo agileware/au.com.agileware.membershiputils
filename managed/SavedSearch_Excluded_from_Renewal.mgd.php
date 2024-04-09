@@ -16,12 +16,14 @@ return [
         'api_params' => [
           'version' => 4,
           'select' => [
+            'contact_id',
             'id',
             'contact_id.sort_name',
             'membership_type_id:label',
             'start_date',
             'end_date',
-            'Membership_LineItem_entity_id_01_LineItem_Contribution_entity_id_01.contribution_status_id:label',
+            'GROUP_CONCAT(UNIQUE Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.receive_date ORDER BY Membership_LineItem_entity_id_01.contribution_id DESC) AS GROUP_CONCAT_Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01_receive_date_Membership_LineItem_entity_id_01_contribution_id',
+            'GROUP_CONCAT(UNIQUE Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.contribution_status_id:label ORDER BY Membership_LineItem_entity_id_01.contribution_id DESC) AS GROUP_CONCAT_Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01_contribution_status_id_label_Membership_LineItem_entity_id_01_contribution_id',
           ],
           'orderBy' => [],
           'where' => [
@@ -30,28 +32,31 @@ return [
               [
                 [
                   'end_date',
-                  '<',
+                  '>',
                   'now + 30 day',
                 ],
                 [
                   'AND',
                   [
                     [
-                      'Membership_LineItem_entity_id_01_LineItem_Contribution_entity_id_01.receive_date',
-                      '>',
-                      'now - 30 day',
-                    ],
-                    [
-                      'Membership_LineItem_entity_id_01_LineItem_Contribution_entity_id_01.contribution_status_id:name',
+                      'Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.contribution_status_id:name',
                       '=',
                       'Pending',
+                    ],
+                    [
+                      'Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.receive_date',
+                      '>',
+                      'now - 30 day',
                     ],
                   ],
                 ],
               ],
             ],
           ],
-          'groupBy' => [],
+          'groupBy' => [
+            'contact_id',
+            'id',
+          ],
           'join' => [
             [
               'LineItem AS Membership_LineItem_entity_id_01',
@@ -68,17 +73,12 @@ return [
               ],
             ],
             [
-              'Contribution AS Membership_LineItem_entity_id_01_LineItem_Contribution_entity_id_01',
+              'Contribution AS Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01',
               'LEFT',
               [
-                'Membership_LineItem_entity_id_01.entity_id',
+                'Membership_LineItem_entity_id_01.contribution_id',
                 '=',
-                'Membership_LineItem_entity_id_01_LineItem_Contribution_entity_id_01.id',
-              ],
-              [
-                'Membership_LineItem_entity_id_01.entity_table',
-                '=',
-                '\'civicrm_contribution\'',
+                'Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.id',
               ],
             ],
           ],
