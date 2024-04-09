@@ -18,7 +18,7 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
 
   public static function getSubscribedEvents(): array {
     return [
-      'hook_civicrm_buildForm' => 'buildForm'
+      'hook_civicrm_buildForm' => 'buildForm',
     ];
   }
 
@@ -26,12 +26,12 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
     $contact = $this->form->getContactID();
 
     $contacts_changed = SearchDisplay::run(FALSE)
-                                     ->setSavedSearch(self::comparisonSearch)
-                                     ->setFilters([
-                                       'contact_id' => $contact,
-                                       'membership_type_id' => $this->type_ids
-                                       ])
-                                     ->execute();
+      ->setSavedSearch(self::comparisonSearch)
+      ->setFilters([
+        'contact_id' => $contact,
+        'membership_type_id' => $this->type_ids,
+      ])
+      ->execute();
 
     return $contacts_changed->count()
       ? ($contacts_changed->first()['data']['membership_type_id:label'] ?? TRUE)
@@ -44,53 +44,51 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
     $this->type_ids = array_unique(array_map(
       fn($pfv) => $pfv['membership_type_id'],
       PriceFieldValue::get(FALSE)
-                   ->addSelect('membership_type_id')
-                   ->addWhere('price_field_id.price_set_id', '=', $priceSetID)
-                   ->addWhere('membership_type_id', 'IS NOT EMPTY')
-                   ->execute()
-                   ->getArrayCopy()
+        ->addSelect('membership_type_id')
+        ->addWhere('price_field_id.price_set_id', '=', $priceSetID)
+        ->addWhere('membership_type_id', 'IS NOT EMPTY')
+        ->execute()
+        ->getArrayCopy()
     ));
 
     return count($this->type_ids) > 0;
   }
 
-  public function validateForm(GenericHookEvent $event): void {
-
-  }
+  public function validateForm(GenericHookEvent $event): void {}
 
   public function buildForm(GenericHookEvent $event): void {
     $this->form = &$event->form;
 
-    if ( $this->form instanceof CRM_Contribute_Form_Contribution_Main ) {
+    if ($this->form instanceof CRM_Contribute_Form_Contribution_Main) {
       $this->buildForm_Contribute_Form_Contribution_main($event);
     }
-    elseif ( $this->form instanceof CRM_Admin_Form_Generic ) {
+    elseif ($this->form instanceof CRM_Admin_Form_Generic) {
       $this->buildForm_Admin_Form_Generic($event);
     }
   }
 
   public function buildForm_Contribute_Form_Contribution_main(GenericHookEvent $event): void {
-    if (! $this->hasMembershipPriceFields()) {
+    if (!$this->hasMembershipPriceFields()) {
       return;
     }
 
     $type = $this->hasContactRenewed();
 
-    if (! $type) {
+    if (!$type) {
       return;
     }
 
-    if(is_array($type)) {
+    if (is_array($type)) {
       $type = $type[0];
     }
 
     throw new CRM_Core_Exception(E::ts(
       'A renewal has already been submitted for your %1 Membership',
-      [ 1 => is_string($type) ? "<em>$type</em>" : '' ]
+      [1 => is_string($type) ? "<em>$type</em>" : '']
     ));
   }
 
-  public function buildForm_Admin_Form_Generic (GenericHookEvent $event): void {
+  public function buildForm_Admin_Form_Generic(GenericHookEvent $event): void {
     if (!$this->form->elementExists('membershiputils_prevent_double_renewal')) {
       return;
     }
@@ -99,33 +97,34 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
 
     $field_prevent_double_renewal->setComment(
       E::ts('When enabled, prevents Contribution Pages from loading that include Membership renewal if the using contact has a membership of one of the included types that has already been renewed. You can customise how it is determined that memberships have already been used by changing the parameters of the <a href="%1">Saved Search, "%2"</a>',
-      $this->search_admin_params())
+        $this->search_admin_params())
     );
   }
 
   private function search_admin_params() {
     try {
       $excluded_from_renewal_search = SavedSearch::get(FALSE)
-                                                 ->addWhere( 'name', '=', 'Excluded_from_Renewal' )
-                                                 ->addSelect( 'id', 'label' )
-                                                 ->execute();
+        ->addWhere('name', '=', 'Excluded_from_Renewal')
+        ->addSelect('id', 'label')
+        ->execute();
 
-      if ( $excluded_from_renewal_search->count() ) {
+      if ($excluded_from_renewal_search->count()) {
         $excluded_from_renewal_search = $excluded_from_renewal_search->first();
         return [
           1 => CRM_Utils_System::url(
-             'civicrm/admin/search',
-             '',
-             FALSE,
-             '/edit/' . $excluded_from_renewal_search['id'],
-             TRUE,
+            'civicrm/admin/search',
+            '',
+            FALSE,
+            '/edit/' . $excluded_from_renewal_search['id'],
+            TRUE,
             FALSE,
             TRUE
           ),
-          2 => $excluded_from_renewal_search['label']
+          2 => $excluded_from_renewal_search['label'],
         ];
       }
-    } catch ( Exception $e ) {
+    }
+    catch (Exception $e) {
     }
 
     return [
@@ -141,4 +140,5 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
       2 => E::ts('Excluded from Renewal'),
     ];
   }
+
 }

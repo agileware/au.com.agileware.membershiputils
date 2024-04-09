@@ -4,7 +4,7 @@ require_once 'membershiputils.civix.php';
 
 // phpcs:disable
 use CRM_Membershiputils_ExtensionUtil as E;
-use Symfony\Component\DependencyInjection\{ContainerBuilder,Definition};
+use Symfony\Component\DependencyInjection\{ContainerBuilder, Definition};
 
 // phpcs:enable
 
@@ -22,7 +22,7 @@ function membershiputils_civicrm_config(&$config) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_container/
  */
-function membershiputils_civicrm_container( ContainerBuilder $container) {
+function membershiputils_civicrm_container(ContainerBuilder $container) {
   $resource_hooks = new Definition('CRM_Membershiputils_ResourceHooks');
   $resource_hooks->addTag('kernel.event_subscriber');
   $container->setDefinition('membershiputils_resource_hooks', $resource_hooks);
@@ -60,43 +60,43 @@ function membershiputils_civicrm_enable() {
  */
 function membershiputils_civicrm_managed(&$entities) {
   $entities[] = [
-    'module'  => 'au.com.agileware.membershiputils',
-    'name'    => 'duplicate',
-    'entity'  => 'MembershipStatus',
-    'update'  => 'never',
+    'module' => 'au.com.agileware.membershiputils',
+    'name' => 'duplicate',
+    'entity' => 'MembershipStatus',
+    'update' => 'never',
     'cleanup' => 'never',
-    'params'  => [
-      'version'           => 3,
-      'name'              => 'Duplicate',
-      'label'             => 'Duplicate',
+    'params' => [
+      'version' => 3,
+      'name' => 'Duplicate',
+      'label' => 'Duplicate',
       'is_current_member' => 0,
-      'is_active'         => 1,
-      'is_admin'          => 1,
-      'is_default'        => 0,
-      'is_reserved'       => 0,
-      'weight'            => 999,
+      'is_active' => 1,
+      'is_admin' => 1,
+      'is_default' => 0,
+      'is_reserved' => 0,
+      'weight' => 999,
     ],
   ];
   $entities[] = [
-    'module'  => 'au.com.agileware.membershiputils',
-    'name'    => 'notrenewing',
-    'entity'  => 'MembershipStatus',
-    'update'  => 'never',
+    'module' => 'au.com.agileware.membershiputils',
+    'name' => 'notrenewing',
+    'entity' => 'MembershipStatus',
+    'update' => 'never',
     'cleanup' => 'never',
-    'params'  => [
-      'version'           => 3,
-      'name'              => 'Not Renewing',
-      'label'             => 'Not Renewing',
+    'params' => [
+      'version' => 3,
+      'name' => 'Not Renewing',
+      'label' => 'Not Renewing',
       'is_current_member' => 0,
-      'is_active'         => 1,
-      'is_admin'          => 1,
-      'is_default'        => 0,
-      'is_reserved'       => 0,
-      'weight'            => 999,
+      'is_active' => 1,
+      'is_admin' => 1,
+      'is_default' => 0,
+      'is_reserved' => 0,
+      'weight' => 999,
     ],
   ];
   $entities[] = [
-    'module'  => 'au.com.agileware.membershiputils',
+    'module' => 'au.com.agileware.membershiputils',
     'name' => 'findduplicatememberships',
     'entity' => 'Job',
     'update' => 'always',
@@ -111,44 +111,43 @@ function membershiputils_civicrm_managed(&$entities) {
       'is_active' => 0,
     ],
   ];
-	$entities[] = [
-		'module' => 'au.com.agileware.membershiputils',
-		'name' => 'adjustmembershipenddate',
-		'entity' => 'Job',
-		'update' => 'always',
-		'params' => [
-			'version' => 3,
-			'name' => 'Set Membership End Date to end of the month',
-			'description' => 'Set the Membership End Date to the end of month. Applies to New, Current and Grace memberships only.',
-			'api_entity' => 'membershiputils',
-			'api_action' => 'Adjustmembershipenddate',
-			'parameters' => '',
-			'run_frequency' => 'Daily',
-			'is_active' => 0,
-		],
-	];
-	$entities[] = [
-		'module' => 'au.com.agileware.membershiputils',
-		'name' => 'specificmembershipenddate',
-		'entity' => 'Job',
-		'update' => 'always',
-		'params' => [
-			'version' => 3,
-			'name' => 'Set Membership End Date to a specific date',
-			'description' => 'Set Membership End Date to a specific date. Applies to New, Current and Grace memberships only.',
-			'api_entity' => 'membershiputils',
-			'api_action' => 'Specificmembershipenddate',
-			'parameters' => '',
-			'run_frequency' => 'Daily',
-			'is_active' => 0,
-		],
-	];
+  $entities[] = [
+    'module' => 'au.com.agileware.membershiputils',
+    'name' => 'adjustmembershipenddate',
+    'entity' => 'Job',
+    'update' => 'always',
+    'params' => [
+      'version' => 3,
+      'name' => 'Set Membership End Date to end of the month',
+      'description' => 'Set the Membership End Date to the end of month. Applies to New, Current and Grace memberships only.',
+      'api_entity' => 'membershiputils',
+      'api_action' => 'Adjustmembershipenddate',
+      'parameters' => '',
+      'run_frequency' => 'Daily',
+      'is_active' => 0,
+    ],
+  ];
+  $entities[] = [
+    'module' => 'au.com.agileware.membershiputils',
+    'name' => 'specificmembershipenddate',
+    'entity' => 'Job',
+    'update' => 'always',
+    'params' => [
+      'version' => 3,
+      'name' => 'Set Membership End Date to a specific date',
+      'description' => 'Set Membership End Date to a specific date. Applies to New, Current and Grace memberships only.',
+      'api_entity' => 'membershiputils',
+      'api_action' => 'Specificmembershipenddate',
+      'parameters' => '',
+      'run_frequency' => 'Daily',
+      'is_active' => 0,
+    ],
+  ];
 }
 
-/*
+/**
  * Adjust the end date to end of the month
  */
-
 function membershiputils_adjustmembershipenddate($end_date) {
   // Bizarrely, CiviCRM may pass in end_date in either of these two formats
   if (strpos($end_date, '-') == FALSE) {
@@ -160,18 +159,20 @@ function membershiputils_adjustmembershipenddate($end_date) {
     $date_format = 'Y-m-d';
   }
 
-	// Use the current end date as default
-	$new_end_date = date_create_from_format($date_format, $end_date);
+  // Use the current end date as default
+  $new_end_date = date_create_from_format($date_format, $end_date);
 
-	// Adjust the end date to the last day of the month
-	if (Civi::settings()->get('adjust_membership_end_date')) {
-		$end_date = date_create_from_format($date_format, $end_date);
-		$start_month = date_create($end_date->format('Y-m') . '-01');
-	  $new_end_date = date_modify( $start_month, '+1 month -1 day' );
-} elseif (Civi::settings()->get('use_specific_membership_end_date')) {
-		// Otherwise set a specific end date
-		$new_end_date = date_create_from_format('Y-m-d', Civi::settings()->get('specific_membership_end_date'));
-	}
+  // Adjust the end date to the last day of the month
+  if (Civi::settings()->get('adjust_membership_end_date')) {
+    $end_date = date_create_from_format($date_format, $end_date);
+    $start_month = date_create($end_date->format('Y-m') . '-01');
+    $new_end_date = date_modify($start_month, '+1 month -1 day');
+  }
+  elseif (Civi::settings()->get('use_specific_membership_end_date')) {
+    // Otherwise set a specific end date
+    $new_end_date = date_create_from_format('Y-m-d', Civi::settings()
+      ->get('specific_membership_end_date'));
+  }
   // Return the date in the same format it was received
   return $new_end_date->format($date_format);
 }
@@ -190,7 +191,6 @@ function membershiputils_civicrm_pre($op, $objectName, $id, &$params) {
 function membershiputils_civicrm_post($op, $objectName, $id, &$params) {
   // This function is required to work around weirdness in CiviCRM which sometimes does not set the membership dates, they may be NULL
   if ('Membership' == $objectName && 'create' == $op) {
-
     if (Civi::settings()->get('adjust_membership_end_date') || Civi::settings()->get('use_specific_membership_end_date')) {
       // If end date has been set then do not try to calculate it now
       if (!$params->end_date) {

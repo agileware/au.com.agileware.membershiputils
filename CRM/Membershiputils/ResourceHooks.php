@@ -14,7 +14,7 @@ class CRM_Membershiputils_ResourceHooks implements EventSubscriberInterface {
    */
   public static function getSubscribedEvents() {
     return [
-      'hook_civicrm_pageRun'   => 'pageRun',
+      'hook_civicrm_pageRun' => 'pageRun',
       'hook_civicrm_buildForm' => 'buildForm',
     ];
   }
@@ -25,18 +25,19 @@ class CRM_Membershiputils_ResourceHooks implements EventSubscriberInterface {
       'typeChangeNotification' => Civi::settings()->get('membershiputils_type_change_notification'),
     ]);
 
-    Civi::resources()->addScriptFile( E::LONG_NAME, 'js/typechange.js' );
+    Civi::resources()->addScriptFile(E::LONG_NAME, 'js/typechange.js');
   }
 
-  public function pageRun( GenericHookEvent $event ) {
-    if ( $event->page instanceof CRM_Contribute_Page_ContributionPage ) {
+  public function pageRun(GenericHookEvent $event) {
+    if ($event->page instanceof CRM_Contribute_Page_ContributionPage) {
       $this->addTypeChangeResources();
     }
   }
 
-  public function buildForm( GenericHookEvent $event ) {
-    if ( $event->form instanceof CRM_Contribute_Form_Contribution_Main ) {
+  public function buildForm(GenericHookEvent $event) {
+    if ($event->form instanceof CRM_Contribute_Form_Contribution_Main) {
       $this->addTypeChangeResources();
     }
   }
+
 }
