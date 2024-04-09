@@ -62,5 +62,15 @@ return [
 		'title' => E::ts('Type change message'),
 		'description' => E::ts('Sets the message to be shown to members on the renewal form when they\'re going to change their Membership type'),
 		'settings_pages' => ['membershiputils' => ['weight' => 10]],
-  ]
+  ],
+  'membershiputils_prevent_double_renewal' => [
+    'name' => 'membershiputils_prevent_double_renewal',
+    'type' => 'Boolean',
+    'html_type' => 'YesNo',
+    'default' => 1,
+    'is_domain' => 1,
+    'is_contact' => 0,
+    'title' => E::ts('Prevent duplicate renewal submissions?'),
+    'settings_pages' => ['membershiputils' => ['weight' => 10]],
+  ],
 ];

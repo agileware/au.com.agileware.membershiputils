@@ -84,6 +84,9 @@ return [
           ],
           'having' => [],
         ],
+        'description' => 'Used to determine what contacts can process a membership renewal using Contribution Pages.'."\n"
+          ."\n"
+          .'This search *must* select the Contact ID.',
       ],
       'match' => [
         'name',
