@@ -39,6 +39,21 @@ This feature can be enabled or disabled on the `CiviCRM > Administer > Membershi
 
 If you have existing memberships that need to be updated, then execute the Scheduled Job, `Set specific Membership End Date` (API:  membershiputils.Specificmembershipenddate). This will update the memberships with a status of either: **New**, **Current** and **Grace**, setting the end date to the date specified in the settings.
 
+## Notification of Membership Type change
+
+The user can be notified when renewing their Membership if the price option they selected will alter the type of their existing membership.
+
+This feature can be enabled or disabled and the message shown to members can be customised on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
+
+## Prevent Duplicate Renewal submission
+
+Prevent Contribution pages from being loaded if a member attempts to use one to renew a membership that is not due for renewal or already has a Pending renewal payment.
+
+This feature can be enabled or disabled on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
+
+Whether a membership is not due for renewal can be customised by changing the filters on the packaged Searchkit Saved Search "Excluded from Renewal" to find members who should not be able to renew.
+By default, this search will exclude members whose membership expiry is more than 30 days in the future, or who have a related pending contribution that is less than 30 days old.
+
 # Installation
 
 1. Install and enable this CiviCRM extension like any normal CiviCRM extension.
