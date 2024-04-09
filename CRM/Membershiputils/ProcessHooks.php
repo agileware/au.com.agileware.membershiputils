@@ -59,7 +59,8 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
   public function buildForm(GenericHookEvent $event): void {
     $this->form = &$event->form;
 
-    if ($this->form instanceof CRM_Contribute_Form_Contribution_Main) {
+    if ($this->form instanceof CRM_Contribute_Form_Contribution_Main
+      && Civi::settings()->get('membershiputils_prevent_double_renewal')) {
       $this->buildForm_Contribute_Form_Contribution_main($event);
     }
     elseif ($this->form instanceof CRM_Admin_Form_Generic) {
