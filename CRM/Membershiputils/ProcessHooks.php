@@ -5,6 +5,8 @@ use Civi\Api4\SearchDisplay;
 use Civi\Core\Event\GenericHookEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+use CRM_Membershiputils_ExtensionUtil as E;
+
 class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
 
   const comparisonSearch = 'Excluded_from_Renewal';
@@ -19,7 +21,7 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
     ];
   }
 
-  protected function hasContactRenewed(): bool {
+  protected function hasContactRenewed() {
     $contact = $this->form->getContactID();
 
     $contacts_changed = SearchDisplay::run(FALSE)
@@ -30,7 +32,9 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
                                        ])
                                      ->execute();
 
-    return (bool) $contacts_changed->count();
+    return $contacts_changed->count()
+      ? ($contacts_changed->first()['data']['GROUP_CONCAT_membership_type_id_label'] ?? TRUE)
+      : FALSE;
   }
 
   protected function hasMembershipPriceFields(): bool {
@@ -60,9 +64,23 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
 
     $this->form = &$event->form;
 
-    if ( $this->hasMembershipPriceFields() &&
-         $this->hasContactRenewed() ) {
-      CRM_Core_Error::statusBounce('A renewal has already been submitted for your Membership');
+    if (! $this->hasMembershipPriceFields()) {
+      return;
     }
+
+    $type = $this->hasContactRenewed();
+
+    if (! $type) {
+      return;
+    }
+
+    if(is_array($type)) {
+      $type = $type[0];
+    }
+
+    throw new CRM_Core_Exception(E::ts(
+      'A renewal has already been submitted for your %1 Membership',
+      [ 1 => is_string($type) ? "<em>$type</em>" : '' ]
+    ));
   }
 }
