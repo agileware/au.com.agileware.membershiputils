@@ -33,7 +33,7 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
                                      ->execute();
 
     return $contacts_changed->count()
-      ? ($contacts_changed->first()['data']['GROUP_CONCAT_membership_type_id_label'] ?? TRUE)
+      ? ($contacts_changed->first()['data']['membership_type_id:label'] ?? TRUE)
       : FALSE;
   }
 
