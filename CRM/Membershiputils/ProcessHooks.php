@@ -25,17 +25,34 @@ class CRM_Membershiputils_ProcessHooks implements EventSubscriberInterface {
   protected function hasContactRenewed() {
     $contact = $this->form->getContactID();
 
-    $contacts_changed = SearchDisplay::run(FALSE)
-      ->setSavedSearch(self::comparisonSearch)
-      ->setFilters([
-        'contact_id' => $contact,
-        'membership_type_id' => $this->type_ids,
-      ])
-      ->execute();
+    try {
+      $search = SavedSearch::get(FALSE)
+                             ->addSelect('api_params', 'api_entity')
+                             ->addWhere('name', '=', self::comparisonSearch)
+                             ->execute()
+                             ->first();
 
-    return $contacts_changed->count()
-      ? ($contacts_changed->first()['data']['membership_type_id:label'] ?? TRUE)
-      : FALSE;
+      $entity = $search['api_entity'];
+      $params = $search['api_params'];
+
+      $params['where'][] = [ 'contact_id', '=', $contact ];
+      $params['where'][] = [ 'membership_type_id', 'IN', $this->type_ids ];
+
+      $params['checkPermissions'] = FALSE;
+
+      $contacts_changed = civicrm_api4($entity, 'get', $params);
+
+      return $contacts_changed->count()
+        ? ($contacts_changed->first()['membership_type_id:label'] ?? TRUE)
+        : FALSE;
+    } catch (Exception $e) {
+        Civi::log()->error('Unable to determine renewal status', [
+            'message' => $e->getMessage(),
+            'code' => $e->getCode(),
+            'exception' => $e,
+        ]);
+        return TRUE;
+    }
   }
 
   protected function hasMembershipPriceFields(): bool {

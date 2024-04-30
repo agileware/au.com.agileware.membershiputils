@@ -86,7 +86,7 @@ return [
         ],
         'description' => 'Used to determine what contacts can process a membership renewal using Contribution Pages.'."\n"
           ."\n"
-          .'This search *must* select the Contact ID.',
+          .'This search *must* select the Contact ID and Membership Type',
       ],
       'match' => [
         'name',
