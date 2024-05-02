@@ -37,7 +37,7 @@ This feature is useful if you want to have all membership end dates occur on a s
 
 This feature can be enabled or disabled on the `CiviCRM > Administer > Membership Utilities Settings` page, `/wp-admin/admin.php?page=CiviCRM&q=civicrm%2Fadmin%2Fsetting%2Fmembershiputils`.
 
-If you have existing memberships that need to be updated, then execute the Scheduled Job, `Set specific Membership End Date` (API:  membershiputils.Specificmembershipenddate). This will update the memberships with a status of either: **New**, **Current** and **Grace**, setting the end date to the date specified in the settings.
+If you have existing memberships that need to be updated, then execute the Scheduled Job, `Set specific Membership End Date` (API:  membershiputils.Specificmembershipenddate). This will update the memberships with a status of either: **New** or **Current** (and not Grace), setting the end date to the date specified in the settings.
 
 ## Notification of Membership Type change
 

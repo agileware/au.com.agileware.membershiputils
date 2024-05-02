@@ -27,7 +27,6 @@ function civicrm_api3_membershiputils_Specificmembershipenddate($params): array 
         ->addWhere('status_id:name', 'IN', [
           'New',
           'Current',
-          'Grace',
         ])
         ->execute()->getArrayCopy();
       foreach ($memberships as $membership) {
