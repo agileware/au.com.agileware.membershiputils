@@ -21,25 +21,17 @@ function civicrm_api3_membershiputils_Specificmembershipenddate($params): array 
   try {
     // If this option is enabled then action, otherwise skip
     if (Civi::settings()->get('use_specific_membership_end_date')) {
-      // Get all memberships
-      $memberships = Membership::get()
-        ->addSelect('id', 'end_date')
-        ->addWhere('status_id:name', 'IN', [
-          'New',
-          'Current',
-        ])
-        ->execute()->getArrayCopy();
-      foreach ($memberships as $membership) {
-        // Set a specific end date
-        $new_end_date = date_create_from_format('Y-m-d', Civi::settings()
+      $new_end_date = date_create_from_format('Y-m-d', Civi::settings()
           ->get('specific_membership_end_date'));
 
-        // Update the membership
-        Membership::update()
-          ->addValue('end_date', $new_end_date->format('Y-m-d'))
-          ->addWhere('id', '=', $membership['id'])
-          ->execute();
-      }
+      // Get all memberships
+      \Civi\Api4\Membership::update(TRUE)
+        ->addValue('end_date', $new_end_date->format('Y-m-d'))
+        ->addWhere('status_id:name', 'IN', [
+          'New',
+          'Current'])
+        ->addWhere('end_date', '!=', $new_end_date->format('Y-m-d'))
+        ->execute();
 
       return civicrm_api3_create_success(TRUE, $params, 'membershiputils', 'Specificmembershipenddate');
     }
