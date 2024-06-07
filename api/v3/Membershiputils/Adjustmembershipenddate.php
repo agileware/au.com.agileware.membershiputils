@@ -36,11 +36,13 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
         $start_month = date_create($end_date->format('Y-m') . '-01');
         $new_end_date = date_modify($start_month, '+1 month -1 day');
 
-        // Update the membership
-        Membership::update()
-          ->addValue('end_date', $new_end_date->format('Y-m-d'))
-          ->addWhere('id', '=', $membership['id'])
-          ->execute();
+        if ( $end_date != $new_end_date ) {
+          // Update the membership
+          Membership::update()
+            ->addValue('end_date', $new_end_date->format('Y-m-d'))
+            ->addWhere('id', '=', $membership['id'])
+            ->execute();
+        }
       }
 
       return civicrm_api3_create_success(TRUE, $params, 'membershiputils', 'Adjustmembershipenddate');
