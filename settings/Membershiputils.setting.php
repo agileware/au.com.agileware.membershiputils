@@ -35,7 +35,7 @@ return [
     'is_domain' => 1,
     'is_contact' => 0,
     'title' => E::ts('Specific Membership End Date'),
-    'description' => E::ts('Set the Membership End Date to the end of month. Applies to New, Current and Grace memberships only. Leave blank to disable.'),
+    'description' => E::ts('Set the Membership End Date to the end of month. Applies to New and Current memberships only. Leave blank to disable.'),
     'settings_pages' => ['membershiputils' => ['weight' => 10]],
   ],
   'membershiputils_type_change_notification' => [

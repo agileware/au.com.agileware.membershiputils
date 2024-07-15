@@ -22,6 +22,7 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
     // If this option is enabled then action, otherwise skip
     if (Civi::settings()->get('adjust_membership_end_date')) {
       // Get all memberships
+      // Note: This intentionally updates both Primary and Non-primary memberships because CiviCRM has a long history of bugs when it comes to correctly inheriting changes from Primary to non-primary memberships
       $memberships = Membership::get()
         ->addSelect('id', 'end_date')
         ->addWhere('status_id:name', 'IN', [

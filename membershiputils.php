@@ -177,14 +177,26 @@ function membershiputils_adjustmembershipenddate($end_date) {
   return $new_end_date->format($date_format);
 }
 
-function membershiputils_civicrm_pre($op, $objectName, $id, &$params) {
+function membershiputils_civicrm_pre($op, $objectName, $id, &$params)
+{
   // If the Membership is being created or edited and the end date has been set then adjust
   // Skip when 'null' is set as the end_date as this indicates a Lifetime membership term with on end date
   if (('Membership' == $objectName) && ('edit' == $op || 'create' == $op) && $params['end_date'] && 'null' !== $params['end_date']) {
-    if (Civi::settings()->get('adjust_membership_end_date') || Civi::settings()->get('use_specific_membership_end_date')) {
-      // This is where CiviCRM may pass in the end date in two different formats
+
+    // Get all the membership statuses
+    $membershipStatuses = \Civi\Api4\MembershipStatus::get(TRUE)
+      ->addSelect('id', 'name')
+      ->execute()
+      ->indexBy('id')
+      ->getArrayCopy();
+
+    $currentStatus = $membershipStatuses[$params['status_id']]['name'];
+
+    if (Civi::settings()->get('adjust_membership_end_date') && $currentStatus == 'New' || $currentStatus == 'Current' || $currentStatus == 'Grace') {
       $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
     }
+  } elseif (Civi::settings()->get('use_specific_membership_end_date') && $currentStatus == 'New' || $currentStatus == 'Current') {
+    $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
   }
 }
 
@@ -192,7 +204,7 @@ function membershiputils_civicrm_post($op, $objectName, $id, &$params) {
   // This function is required to work around weirdness in CiviCRM which sometimes does not set the membership dates, they may be NULL
   if ('Membership' == $objectName && 'create' == $op) {
     if (Civi::settings()->get('adjust_membership_end_date') || Civi::settings()->get('use_specific_membership_end_date')) {
-      // If end date has been set then do not try to calculate it now
+      // If end date has not been set then try to calculate it now
       if (!$params->end_date) {
         $dates = CRM_Member_BAO_MembershipType::getDatesForMembershipType($params->membership_type_id, NULL, NULL, NULL);
 

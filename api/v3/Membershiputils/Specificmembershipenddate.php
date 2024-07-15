@@ -25,6 +25,7 @@ function civicrm_api3_membershiputils_Specificmembershipenddate($params): array 
           ->get('specific_membership_end_date'));
 
       // Get all memberships
+      // Note: This intentionally updates both Primary and Non-primary memberships because CiviCRM has a long history of bugs when it comes to correctly inheriting changes from Primary to non-primary memberships
       \Civi\Api4\Membership::update(TRUE)
         ->addValue('end_date', $new_end_date->format('Y-m-d'))
         ->addWhere('status_id:name', 'IN', [
