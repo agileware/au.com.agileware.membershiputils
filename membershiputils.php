@@ -3,6 +3,7 @@
 require_once 'membershiputils.civix.php';
 
 // phpcs:disable
+use Civi\Api4\MembershipStatus;
 use CRM_Membershiputils_ExtensionUtil as E;
 use Symfony\Component\DependencyInjection\{ContainerBuilder, Definition};
 
@@ -177,25 +178,36 @@ function membershiputils_adjustmembershipenddate($end_date) {
   return $new_end_date->format($date_format);
 }
 
-function membershiputils_civicrm_pre($op, $objectName, $id, &$params)
-{
-  // If the Membership is being created or edited and the end date has been set then adjust
+// @TODO Move these hooks to CRM_Membershiputils_AdjustmentHooks
+function membershiputils_civicrm_pre($op, $objectName, $id, &$params) {
+  static $membershipStatuses = NULL;
+
+  // If a Membership is being created or edited and the end date has been set then adjust
   // Skip when 'null' is set as the end_date as this indicates a Lifetime membership term with on end date
-  if (('Membership' == $objectName) && ('edit' == $op || 'create' == $op) && $params['end_date'] && 'null' !== $params['end_date']) {
+  if('Membership' !== $objectName
+     || ('edit' != $op && 'create' != $op)
+     || empty($params['end_date']) || $params['end_date'] === 'null'
+  ) {
+    return;
+  }
 
-    // Get all the membership statuses
-    $membershipStatuses = \Civi\Api4\MembershipStatus::get(TRUE)
-      ->addSelect('id', 'name')
-      ->execute()
-      ->indexBy('id')
-      ->getArrayCopy();
+  $membershipStatuses ??= MembershipStatus::get(FALSE)
+    ->addSelect('id', 'name')
+    ->execute()
+    ->indexBy('id')
+    ->getArrayCopy();
 
-    $currentStatus = $membershipStatuses[$params['status_id']]['name'];
+  $currentStatus = $membershipStatuses[$params['status_id']]['name'];
 
-    if (Civi::settings()->get('adjust_membership_end_date') && $currentStatus == 'New' || $currentStatus == 'Current' || $currentStatus == 'Grace') {
-      $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
-    }
-  } elseif (Civi::settings()->get('use_specific_membership_end_date') && $currentStatus == 'New' || $currentStatus == 'Current') {
+  // @TODO Should this just check if the membership status is an active type?
+  // Adjust membership end date if new, current, grace
+  if (Civi::settings()->get('adjust_membership_end_date')
+      && ($currentStatus == 'New' || $currentStatus == 'Current' || $currentStatus == 'Grace')) {
+    $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
+  }
+  // set specific membership end date if new or current
+  elseif (Civi::settings()->get('use_specific_membership_end_date')
+          && ($currentStatus == 'New' || $currentStatus == 'Current')) {
     $params['end_date'] = membershiputils_adjustmembershipenddate($params['end_date']);
   }
 }
