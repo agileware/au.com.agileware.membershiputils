@@ -27,7 +27,7 @@
   </classloader>
   <civix>
     <namespace>CRM/Membershiputils</namespace>
-    <format>23.02.1</format>
+    <format>25.01.1</format>
   </civix>
   <mixins>
     <mixin>menu-xml@1.0.0</mixin>
