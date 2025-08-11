@@ -23,13 +23,14 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
     if (Civi::settings()->get('adjust_membership_end_date')) {
       // Get all memberships
       // Note: This intentionally updates both Primary and Non-primary memberships because CiviCRM has a long history of bugs when it comes to correctly inheriting changes from Primary to non-primary memberships
-      $memberships = Membership::get()
+      $memberships = Membership::get(FALSE)
         ->addSelect('id', 'end_date')
         ->addWhere('status_id:name', 'IN', [
           'New',
           'Current',
           'Grace',
         ])
+        ->addWhere('membership_type_id.duration_unit', '!=', 'lifetime')
         ->execute()->getArrayCopy();
       foreach ($memberships as $membership) {
         // Calculate the end of month date for the membership
@@ -39,7 +40,7 @@ function civicrm_api3_membershiputils_Adjustmembershipenddate($params): array {
 
         if ( $end_date != $new_end_date ) {
           // Update the membership
-          Membership::update()
+          Membership::update(FALSE)
             ->addValue('end_date', $new_end_date->format('Y-m-d'))
             ->addWhere('id', '=', $membership['id'])
             ->execute();
