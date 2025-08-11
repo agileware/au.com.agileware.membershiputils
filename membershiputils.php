@@ -149,6 +149,9 @@ function membershiputils_civicrm_managed(&$entities) {
 /**
  * Adjust the end date to end of the month
  */
+
+// @TODO check if this affects Lifetime memberships, which should be skipped
+
 function membershiputils_adjustmembershipenddate($end_date) {
   // Bizarrely, CiviCRM may pass in end_date in either of these two formats
   if (strpos($end_date, '-') == FALSE) {
