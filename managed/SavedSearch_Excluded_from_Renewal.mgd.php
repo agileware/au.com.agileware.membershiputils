@@ -5,7 +5,7 @@ return [
   [
     'name' => 'SavedSearch_Excluded_from_Renewal',
     'entity' => 'SavedSearch',
-    'cleanup' => 'unused',
+    'cleanup' => 'always',
     'update' => 'unmodified',
     'params' => [
       'version' => 4,
@@ -33,7 +33,7 @@ return [
                 [
                   'end_date',
                   '>',
-                  'now + 30 day',
+                  'now + 1 month',
                 ],
                 [
                   'AND',
@@ -46,7 +46,17 @@ return [
                     [
                       'Membership_LineItem_entity_id_01_LineItem_Contribution_contribution_id_01.receive_date',
                       '>',
-                      'now - 30 day',
+                      'now - 1 month',
+                    ],
+                    [
+                      'is_pay_later',
+                      '=',
+                      TRUE,
+                    ],
+                    [
+                      'status_id:name',
+                      '!=',
+                      'Pending',
                     ],
                   ],
                 ],
@@ -69,7 +79,7 @@ return [
               [
                 'Membership_LineItem_entity_id_01.entity_table',
                 '=',
-                '\'civicrm_membership\'',
+                "'civicrm_membership'",
               ],
             ],
             [
@@ -84,9 +94,9 @@ return [
           ],
           'having' => [],
         ],
-        'description' => 'Used to determine what contacts can process a membership renewal using Contribution Pages.'."\n"
-          ."\n"
-          .'This search *must* select the Contact ID and Membership Type',
+        'description' => E::ts('Used to determine what contacts can process a membership renewal using Contribution Pages.
+ 
+This search *must* select the Contact ID and Membership Type'),
       ],
       'match' => [
         'name',
